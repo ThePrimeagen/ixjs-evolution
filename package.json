@@ -1,0 +1,26 @@
+{
+  "name": "ixjs-evolution",
+  "version": "0.0.1",
+  "description": "A set of evolutionary search algorithms done through IxJS",
+  "main": "evolution.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/primeagen/ixjs-evolution"
+  },
+  "keywords": [
+    "ixjs",
+    "ix",
+    "ai",
+    "evolution"
+  ],
+  "author": [
+    "Michael Paulson <michael.b.paulson@gmail.com>",
+    "Brent Echols"
+  ],
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "f39d1c2d6bb8955cd060b6bfcccedfd6147013b7"
+}
