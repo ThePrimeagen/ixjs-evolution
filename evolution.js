@@ -39,7 +39,9 @@ module.exports = {
             selectionFn: selectionType.FIRST_FIT,
             xOverFn: xOverType.1_POINT,
             mutationFn: mutationType.GAUSSIAN,
+            fitnessFn: null;
         }, options);
+
         var select = selectionFn(basePopulation, fitnessFn, options);
         var xOver = xOverFn(basePopulation, fitnessFn, options);
         var mutate = mutationFn(xOver, options);
