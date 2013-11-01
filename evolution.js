@@ -49,8 +49,8 @@ module.exports = {
             minFit: null, //Used for the selection schemes utilizing a min/max fitness for selection
         }, options);
 
-        var select = selectionFn(basePopulation, fitnessFn, options);
-        var xOver = xOverFn(basePopulation, fitnessFn, options);
+        var select = selectionFn(options);
+        var xOver = xOverFn(options);
         var mutate = mutationFn(xOver, options);
 
         return mutate.getEnumerator();
