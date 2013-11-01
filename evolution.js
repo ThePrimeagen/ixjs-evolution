@@ -39,7 +39,14 @@ module.exports = {
             selectionFn: selectionType.FIRST_FIT,
             xOverFn: xOverType.1_POINT,
             mutationFn: mutationType.GAUSSIAN,
-            fitnessFn: null;
+            fitnessFn: null,
+            basePopulation: [],
+
+            maximize: true,
+            lambda: basePopulation.length, //The desired number of children to produce
+            heightAdjust: 1, //Used for Gaussian mutation
+            sigma: 1, //Used for Gaussian mutation
+            minFit: null, //Used for the selection schemes utilizing a min/max fitness for selection
         }, options);
 
         var select = selectionFn(basePopulation, fitnessFn, options);
