@@ -6,6 +6,23 @@ var next = require('./lib/util').next;
 
 // Exports the set of enumerables.
 module.exports = {
+
+    xOverType : {
+        1_POINT : crossOver.onePoint,
+        2_POINT : crossOver.twoPoint,
+        N_POINT : crossOver.nPoint
+    },
+
+    selectionType : {
+        FIRST_FIT : selection.firstFit,
+        RANDOM_FIT : selection.randomFit,
+        WEIGHTED_ROULETTE : selection.weightedRoulette,
+    },
+
+    mutationType : {
+        GAUSSIAN : 1,
+    },
+
     /**
      * Grabs the first fittest individual from the population.  It uses the
      * sequential enumerator for selection so the results will always be
@@ -17,17 +34,15 @@ module.exports = {
      * @param  {Number} prop
      * @return {Ix.Enumerable}
      */
-    firstFitOnePointRandomMutation: function(basePopulation, fitnessFn, minFit, sigma, heightAdjust) {
-        var select = selection.firstFit(basePopulation, fitnessFn, minFit);
-        var xOver = crossOver.onePoint(select);
-        var mutate = mutation.mutateRandom(xOver, sigma, heightAdjust);
-
-        return mutate.getEnumerator();
-    },
-    firstFitTwoPointRandomMutation: function(basePopulation, fitnessFn, minFit, sigma, heightAdjust) {
-        var select = selection.firstFit(basePopulation, fitnessFn, minFit);
-        var xOver = crossOver.twoPoint(select);
-        var mutate = mutation.mutateRandom(xOver, sigma, heightAdjust);
+    firstFitRandomMutation: function(basePopulation, options) {
+        var settings = _.assign({
+            selectionFn: selectionType.FIRST_FIT,
+            xOverFn: xOverType.1_POINT,
+            mutationFn: mutationType.GAUSSIAN,
+        }, options);
+        var select = selectionFn(basePopulation, fitnessFn, options);
+        var xOver = xOverFn(basePopulation, fitnessFn, options);
+        var mutate = mutationFn(xOver, options);
 
         return mutate.getEnumerator();
     },
