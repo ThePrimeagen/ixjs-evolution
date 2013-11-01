@@ -3,6 +3,7 @@ var crossOver = require('./lib/crossover');
 var mutation = require('./lib/mutation');
 var population = require('./lib/population');
 var next = require('./lib/util').next;
+var _ = require('lodash');
 
 // Exports the set of enumerables.
 module.exports = {
