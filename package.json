@@ -20,6 +20,10 @@
     "Michael Paulson <michael.b.paulson@gmail.com>",
     "Brent Echols"
   ],
+  "dependencies": {
+    "lodash": "*",
+    "ix": "*"
+  },
   "license": "MIT",
   "readmeFilename": "README.md",
   "gitHead": "f39d1c2d6bb8955cd060b6bfcccedfd6147013b7"
