@@ -11,7 +11,7 @@ for (var i = 0; i < 5; i++) {
 }
 
 var selector = util.sequentialValue(base);
-var xOver = nPoint(xOver, 3);
+var xOver = nPoint(selector, 3).getEnumerator();
 
 
 for (var i = 0; i < 3; i++) {
