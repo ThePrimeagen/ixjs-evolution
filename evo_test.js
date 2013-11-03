@@ -1,6 +1,6 @@
 var evolution = require('./evolution');
 var util = require('./lib/util');
-var roulette = require('./lib/selection').roulette;
+var roulette = require('./lib/GA/selection').roulette;
 var next = util.next;
 var popFit = util.populationFitness;
 
@@ -17,23 +17,29 @@ var fitnessFn = function(individual) {
     var sum = 0;
 
     for (var i = 0; i < individual.length; i++) {
-        sum += individual[i];
+        if (i % 2 === 0) {
+            sum += individual[i];
+        } else {
+            sum -= 2 * individual[i];
+        }
     }
 
     return sum;
 };
 
+var max = true;
 var evoEnum = evolution.construct({
     basePopulation: base,
     fitnessFn: fitnessFn,
-    maximize: false
+    maximize: max
 });
 
 var loop = evolution.loop({
     basePopulation: base,
     fitnessFn: fitnessFn,
     selector: evoEnum,
-    selectionFn: roulette
+    selectionFn: roulette,
+    maximize: max
 });
 
 function printFit(pop) {
@@ -47,8 +53,8 @@ function printPop(pop) {
 }
 
 printPop(base);
-for (i = 1; i <= 500; i++) {
-    if (i % 50 === 0) {
+for (i = 1; i <= 5000; i++) {
+    if (i % 500 === 0) {
         printFit(base);
     }
 
