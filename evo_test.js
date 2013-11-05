@@ -1,6 +1,6 @@
 var evolution = require('./evolution');
 var util = require('./lib/util');
-var roulette = require('./lib/GA/selection').roulette;
+var roulette = require('./lib/selection').roulette;
 var next = util.next;
 var popFit = util.populationFitness;
 
