@@ -41,7 +41,7 @@ module.exports = {
      * @param  {Number} prop
      * @return {Ix.Enumerable}
      */
-    construct: function(options) {
+    constructGA: function(options) {
         var settings = _.assign({
             selectionFn: selectionType.FIRST_FIT,
             xOverFn: xOverType.ONE_POINT,

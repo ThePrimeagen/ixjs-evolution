@@ -5,7 +5,7 @@ var next = util.next;
 var popFit = util.populationFitness;
 
 var base = [];
-for (var i = 0; i < 5; i++) {
+for (var i = 0; i < 50; i++) {
     var r = [];
     for (var j = 0; j < 5; j++) {
         r.push(Math.floor(Math.random() * 100));
@@ -17,18 +17,14 @@ var fitnessFn = function(individual) {
     var sum = 0;
 
     for (var i = 0; i < individual.length; i++) {
-        if (i % 2 === 0) {
-            sum += individual[i];
-        } else {
-            sum -= 2 * individual[i];
-        }
+        sum += Math.abs(i - individual[i]);
     }
 
     return sum;
 };
 
-var max = true;
-var evoEnum = evolution.construct({
+var max = false;
+var evoEnum = evolution.constructGA({
     basePopulation: base,
     fitnessFn: fitnessFn,
     maximize: max
