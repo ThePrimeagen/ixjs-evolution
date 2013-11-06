@@ -83,17 +83,22 @@ module.exports = {
             basePopulation: [],
             maximize: true,
             lambda: 0,
-            heightAdjust: 1, //Used for Gaussian mutation
+            heightAdjust: 1, //Used for Gaussian 
             sigma: 1, //Used for Gaussian mutation
             minFit: null, //Used for the selection schemes utilizing a min/max fitness for selection
+
+            numParents: 2,
+            numChildren: 2
         }, options);
+
+        initializePopulationParameters(options.basePopulation, sigma);
 
         if (settings.lambda === 0) {
             settings.lambda = settings.basePopulation.length;
         }
 
         var select = settings.selectionFn(settings);
-        var xOver = settings.xOverFn(select, settings.lambda);
+        var xOver = settings.xOverFn(select, settings.lambda, options.numParents, options.numChildren);
         var mutate = settings.mutationFn(xOver, settings);
 
         return mutate.getEnumerator();
@@ -168,5 +173,14 @@ module.exports = {
 
             return children;
         };
+    }
+
+    initializePopulationParameters: function(population, sigmaRange) {
+        for(var i = 0; i < population.length; i++) {
+            population[i].params = [];
+            for (var j = 0; j < population[i].length; j++) {
+                population[i].params.push(Math.random() * sigmaRange);   
+            }
+        }
     }
 };
