@@ -128,6 +128,7 @@ module.exports = {
                 basePopulation: newPop,
                 maximize: config.maximize
             }).getEnumerator();
+
             for (var i = 0; i < basePopulation.length; i++) {
                 basePopulation.pop();
                 basePopulation.unshift(next(selectionEnum));
