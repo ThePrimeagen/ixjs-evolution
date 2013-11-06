@@ -1,6 +1,11 @@
 var GA = require('./lib/GA/index');
-var crossOver = GA.crossOver;
-var mutation = GA.mutation;
+var ES = require('./lib/ES/index');
+
+var gaCrossOver = GA.crossOver;
+var gaMutation = GA.mutation;
+var esCrossover = ES.crossOver;
+var esMutation = ES.mutation;
+
 var util = require('./lib/util');
 var selection = require('./lib/selection');
 var next = util.next;
@@ -14,13 +19,15 @@ var selectionType = {
 };
 
 var mutationType = {
-    GAUSSIAN: mutation.gaussian
+    GA_GAUSSIAN: gaMutation.gaussian,
+    ES_GAUSSIAN: esMutation.gaussian
 };
 
 var xOverType = {
-    ONE_POINT: crossOver.onePoint,
-    TWO_POINT: crossOver.twoPoint,
-    N_POINT: crossOver.nPoint
+    GA_ONE_POINT: gaCrossOver.onePoint,
+    GA_TWO_POINT: gaCrossOver.twoPoint,
+    GA_N_POINT: gaCrossOver.nPoint,
+    ES_N_POINT: esCrossover.nPoint
 };
 
 // Exports the set of enumerables.
@@ -44,8 +51,8 @@ module.exports = {
     constructGA: function(options) {
         var settings = _.assign({
             selectionFn: selectionType.FIRST_FIT,
-            xOverFn: xOverType.ONE_POINT,
-            mutationFn: mutationType.GAUSSIAN,
+            xOverFn: xOverType.GA_ONE_POINT,
+            mutationFn: mutationType.GA_GAUSSIAN,
             fitnessFn: null,
             basePopulation: [],
             maximize: true,
@@ -61,6 +68,37 @@ module.exports = {
 
         var select = settings.selectionFn(settings);
         var xOver = settings.xOverFn(select, settings.lambda);
+        var mutate = settings.mutationFn(xOver, settings);
+
+        return mutate.getEnumerator();
+    },
+
+
+    constructES: function(options) {
+        var settings = _.assign({
+            selectionFn: selectionType.FIRST_FIT,
+            xOverFn: xOverType.ES_N_POINT,
+            mutationFn: mutationType.ES_GAUSSIAN,
+            fitnessFn: null,
+            basePopulation: [],
+            maximize: true,
+            lambda: 0,
+            heightAdjust: 1, //Used for Gaussian 
+            sigma: 1, //Used for Gaussian mutation
+            minFit: null, //Used for the selection schemes utilizing a min/max fitness for selection
+
+            numParents: 2,
+            numChildren: 2
+        }, options);
+
+        initializePopulationParameters(options.basePopulation, sigma);
+
+        if (settings.lambda === 0) {
+            settings.lambda = settings.basePopulation.length;
+        }
+
+        var select = settings.selectionFn(settings);
+        var xOver = settings.xOverFn(select, settings.lambda, options.numParents, options.numChildren);
         var mutate = settings.mutationFn(xOver, settings);
 
         return mutate.getEnumerator();
@@ -136,5 +174,14 @@ module.exports = {
 
             return children;
         };
+    }
+
+    initializePopulationParameters: function(population, sigmaRange) {
+        for(var i = 0; i < population.length; i++) {
+            population[i].params = [];
+            for (var j = 0; j < population[i].length; j++) {
+                population[i].params.push(Math.random() * sigmaRange);   
+            }
+        }
     }
 };
