@@ -3,9 +3,10 @@ var util = require('./lib/util');
 var roulette = require('./lib/selection').roulette;
 var next = util.next;
 var popFit = util.populationFitness;
+var _ = require('lodash');
 
 var base = [];
-for (var i = 0; i < 50; i++) {
+for (var i = 0; i < 200; i++) {
     var r = [];
     for (var j = 0; j < 5; j++) {
         r.push(Math.floor(Math.random() * 100));
@@ -17,14 +18,14 @@ var fitnessFn = function(individual) {
     var sum = 0;
 
     for (var i = 0; i < individual.length; i++) {
-        sum += Math.abs(i - individual[i]);
+        sum += Math.abs(individual[i]);
     }
 
     return sum;
 };
 
 var max = false;
-var evoEnum = evolution.constructGA({
+var evoEnum = evolution.constructES({
     basePopulation: base,
     fitnessFn: fitnessFn,
     maximize: max
@@ -49,11 +50,20 @@ function printPop(pop) {
 }
 
 printPop(base);
-for (i = 1; i <= 5000; i++) {
-    if (i % 500 === 0) {
+for (i = 1; i <= 30; i++) {
+    if (i % 100 === 0) {
         printFit(base);
     }
 
     var children = loop();
 }
-printPop(children);
+
+// Gets the most fit child.
+var mostFit = _.reduce(base, function(a, b) {
+    if (!a) {
+        return b;
+    }
+
+    return max ? (b.fit > a.fit ? b : a) : (b.fit > a.fit ? a : b);
+}, null);
+console.log(mostFit);

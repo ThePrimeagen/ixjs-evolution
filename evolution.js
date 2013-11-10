@@ -1,10 +1,13 @@
 var GA = require('./lib/GA/index');
 var ES = require('./lib/ES/index');
+var DE = require('./lib/DE/index');
 
 var gaCrossOver = GA.crossOver;
 var gaMutation = GA.mutation;
-var esCrossover = ES.crossOver;
+var esCrossOver = ES.crossOver;
 var esMutation = ES.mutation;
+var deCrossOver = DE.crossOver;
+var deMutation = DE.mutation;
 
 var util = require('./lib/util');
 var selection = require('./lib/selection');
@@ -20,18 +23,21 @@ var selectionType = {
 
 var mutationType = {
     GA_GAUSSIAN: gaMutation.gaussian,
-    ES_GAUSSIAN: esMutation.gaussian
+    ES_GAUSSIAN: esMutation.gaussian,
+    DE_TRIAL_VECTOR: deMutation.trialVector
 };
 
 var xOverType = {
     GA_ONE_POINT: gaCrossOver.onePoint,
     GA_TWO_POINT: gaCrossOver.twoPoint,
     GA_N_POINT: gaCrossOver.nPoint,
-    ES_N_POINT: esCrossover.nPoint
+    ES_N_POINT: esCrossOver.nPoint,
+    DE_BINOMIAL: deCrossOver.binomial,
+    DE_EXPONENTIAL: deCrossOver.exponential
 };
 
 // Exports the set of enumerables.
-module.exports = {
+var Evolution = {
 
     xOverType: xOverType,
     selectionType: selectionType,
@@ -73,6 +79,28 @@ module.exports = {
         return mutate.getEnumerator();
     },
 
+    constructDE: function(options) {
+        var settings = _.assign({
+            xOverFn: xOverType.DE_EXPONENTIAL,
+            mutationFn: mutationType.DE_TRIAL_VECTOR,
+            fitnessFn: null,
+            basePopulation: [],
+            maximize: true,
+            lambda: 0,
+            beta: 0.05,
+            p: 0.05,
+            minFit: null //Used for the selection schemes utilizing a min/max fitness for selection
+        }, options);
+
+        if (settings.lambda === 0) {
+            settings.lambda = settings.basePopulation.length;
+        }
+
+        var mutate = settings.mutationFn(settings);
+        var xOver = settings.xOverFn(mutate, settings);
+
+        return xOver.getEnumerator();
+    },
 
     constructES: function(options) {
         var settings = _.assign({
@@ -83,7 +111,9 @@ module.exports = {
             basePopulation: [],
             maximize: true,
             lambda: 0,
-            heightAdjust: 1, //Used for Gaussian 
+            sigmaMutationAmount: 0.99,
+            sigmaMutationRate: 0.2,
+            heightAdjust: 1, //Used for Gaussian
             sigma: 1, //Used for Gaussian mutation
             minFit: null, //Used for the selection schemes utilizing a min/max fitness for selection
 
@@ -91,14 +121,14 @@ module.exports = {
             numChildren: 2
         }, options);
 
-        initializePopulationParameters(options.basePopulation, sigma);
+        Evolution.initializePopulationParameters(options.basePopulation, settings.sigma);
 
         if (settings.lambda === 0) {
             settings.lambda = settings.basePopulation.length;
         }
 
         var select = settings.selectionFn(settings);
-        var xOver = settings.xOverFn(select, settings.lambda, options.numParents, options.numChildren);
+        var xOver = settings.xOverFn(select, settings.lambda, settings.numChildren, settings.numParents);
         var mutate = settings.mutationFn(xOver, settings);
 
         return mutate.getEnumerator();
@@ -149,6 +179,7 @@ module.exports = {
         var selectionFn = config.selectionFn;
         var generational = config.generational;
         var max = config.maximize;
+        var lambda = config.lambda || config.basePopulation.length;
 
         return function() {
 
@@ -167,21 +198,23 @@ module.exports = {
                 maximize: config.maximize
             }).getEnumerator();
 
-            for (var i = 0; i < basePopulation.length; i++) {
+            for (var i = 0; i < lambda; i++) {
                 basePopulation.pop();
                 basePopulation.unshift(next(selectionEnum));
             }
 
             return children;
         };
-    }
+    },
 
     initializePopulationParameters: function(population, sigmaRange) {
         for(var i = 0; i < population.length; i++) {
             population[i].params = [];
             for (var j = 0; j < population[i].length; j++) {
-                population[i].params.push(Math.random() * sigmaRange);   
+                population[i].params.push(Math.random() * sigmaRange);
             }
         }
     }
 };
+
+module.exports = Evolution;
