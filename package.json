@@ -1,6 +1,6 @@
 {
   "name": "ixjs-evolution",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A set of evolutionary search algorithms done through IxJS",
   "main": "evolution.js",
   "scripts": {
