@@ -102,6 +102,7 @@ var Evolution = {
         return xOver.getEnumerator();
     },
 
+    //Method for build an ES enumerator, based on the passed options
     constructES: function(options) {
         var settings = _.assign({
             selectionFn: selectionType.FIRST_FIT,
@@ -123,14 +124,17 @@ var Evolution = {
 
         Evolution.initializePopulationParameters(options.basePopulation, settings.sigma);
 
+        //0 is the default lambda, and therefore we want to override it with the population size if not specified
         if (settings.lambda === 0) {
             settings.lambda = settings.basePopulation.length;
         }
 
+        //Build an enumerator, by building each successive step on top of each other
         var select = settings.selectionFn(settings);
         var xOver = settings.xOverFn(select, settings.lambda, settings.numChildren, settings.numParents);
         var mutate = settings.mutationFn(xOver, settings);
 
+        //Return the enumerator, such that each pull request represents a generation
         return mutate.getEnumerator();
     },
 
@@ -207,6 +211,8 @@ var Evolution = {
         };
     },
 
+    // Builds out the population parameters used by ES algorithms onto the given population
+    // All parameters are randomly initialized to the range [0, sigmaRange)
     initializePopulationParameters: function(population, sigmaRange) {
         for(var i = 0; i < population.length; i++) {
             population[i].params = [];
